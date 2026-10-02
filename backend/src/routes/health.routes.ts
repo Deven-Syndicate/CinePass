@@ -1,12 +1,8 @@
 import { Router } from "express";
+import { healthCheck } from "../controllers/health.controller";
 
 const router = Router();
 
-router.get("/", (_req, res) => {
-  res.json({
-    status: "ok",
-    service: "CinePass API"
-  });
-});
+router.get("/", healthCheck);
 
 export default router;
