@@ -1,14 +1,12 @@
 import { Router } from "express";
-import healthRoutes from "./health.routes";
 
 const router = Router();
 
 router.get("/", (_req, res) => {
   res.json({
-    message: "CinePass API is running"
+    status: "ok",
+    service: "CinePass API"
   });
 });
-
-router.use("/health", healthRoutes);
 
 export default router;
