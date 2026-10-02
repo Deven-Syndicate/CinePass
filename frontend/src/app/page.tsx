@@ -6,7 +6,7 @@ export default function Home() {
   const [message, setMessage] = useState("Connecting to CinePass API...");
 
   useEffect(() => {
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/`)
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/`)
       .then((res) => res.json())
       .then((data) => setMessage(data.message))
       .catch(() => setMessage("Failed to connect to CinePass API"));
