@@ -5,6 +5,8 @@ import {
   expireBookingsController,
 } from "../controllers/booking.controller";
 import { authenticate } from "../middleware/auth.middleware";
+import { authorize } from "../middleware/role.middleware";
+import { UserRole } from "../generated/prisma/client";
 
 const router = Router();
 
@@ -18,6 +20,11 @@ router.post(
   authenticate,
   createBookingController
 );
-router.post("/expire", expireBookingsController);
+router.post(
+    "/expire",
+    authenticate,
+    authorize(UserRole.ADMIN),
+    expireBookingsController
+);
 
 export default router;
