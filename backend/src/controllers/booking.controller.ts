@@ -4,13 +4,18 @@ import {
   createBooking,
   expireBookings,
 } from "../services/booking.service";
+import { authenticate } from "../middleware/auth.middleware";
+import { UserRole } from "../generated/prisma/client";
 
 export const getBookingsController = async (
-  _req: Request,
+  req: Request,
   res: Response
 ) => {
   try {
-    const bookings = await getBookings();
+    const bookings =
+      req.user?.role === UserRole.ADMIN
+        ? await getBookings()
+        : await getBookings(req.user?.userId);
 
     res.json({
       success: true,

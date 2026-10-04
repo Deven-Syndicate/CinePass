@@ -8,7 +8,11 @@ import { authenticate } from "../middleware/auth.middleware";
 
 const router = Router();
 
-router.get("/", getBookingsController);
+router.get(
+  "/",
+  authenticate,
+  getBookingsController
+);
 router.post(
   "/",
   authenticate,

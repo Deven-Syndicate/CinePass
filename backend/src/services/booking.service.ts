@@ -1,7 +1,8 @@
 import { prisma } from "./prisma.service";
 
-export const getBookings = async () => {
+export const getBookings = async (userId?: number) => {
   return prisma.booking.findMany({
+    where: userId ? { userId } : undefined,
     include: {
       user: {
         select: {
