@@ -5,6 +5,7 @@ import {
   getUsersController,
   createUserController,
 } from "../controllers/user.controller";
+import { UserRole } from "../generated/prisma/client";
 
 const router = Router();
 
@@ -12,7 +13,7 @@ router.get("/", authenticate, getUsersController);
 router.post(
   "/",
   authenticate,
-  authorize("ADMIN"),
+  authorize(UserRole.ADMIN),
   createUserController
 );
 
