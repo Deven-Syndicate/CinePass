@@ -1,6 +1,7 @@
 import { Router } from "express";
 import {
   getSeatsController,
+  getShowSeatsController,
   createSeatController,
 } from "../controllers/seat.controller";
 import { authenticate } from "../middleware/auth.middleware";
@@ -9,6 +10,7 @@ import { UserRole } from "../generated/prisma/client";
 
 const router = Router();
 
+router.get("/:showId", getShowSeatsController);
 router.get("/", getSeatsController);
 router.post(
   "/",

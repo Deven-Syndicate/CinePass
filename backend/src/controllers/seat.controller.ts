@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import {
   getSeats,
+  getShowSeats,
   createSeat,
 } from "../services/seat.service";
 import { Prisma } from "../generated/prisma/client";
@@ -22,6 +23,43 @@ export const getSeatsController = async (
     res.status(500).json({
       success: false,
       message: "Failed to fetch seats",
+    });
+  }
+};
+
+export const getShowSeatsController = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const showId = Number(req.params.showId);
+
+    if (!Number.isInteger(showId)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid show ID",
+      });
+    }
+
+    const seats = await getShowSeats(showId);
+
+    res.json({
+      success: true,
+      data: seats,
+    });
+  } catch (error) {
+    console.error("Failed to fetch show seats:", error);
+
+    if (error instanceof Error && error.message === "Show not found") {
+      return res.status(404).json({
+        success: false,
+        message: "Show not found",
+      });
+    }
+
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch show seats",
     });
   }
 };
