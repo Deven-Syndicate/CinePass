@@ -8,6 +8,7 @@ import showRoutes from "./show.routes";
 import bookingRoutes from "./booking.routes";
 import userRoutes from "./user.routes";
 import bookingSeatRoutes from "./booking-seat.routes";
+import authRoutes from "./auth.routes";
 
 const router = Router();
 
@@ -27,5 +28,6 @@ router.use("/shows", showRoutes);
 router.use("/bookings", bookingRoutes);
 router.use("/users", userRoutes);
 router.use("/bookings", bookingSeatRoutes);
+router.use("/auth", authRoutes);
 
 export default router;

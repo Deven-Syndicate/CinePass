@@ -1,4 +1,5 @@
 import { prisma } from "./prisma.service";
+import { hashPassword } from "./password.service";
 
 export const getUsers = async () => {
   return prisma.user.findMany({
@@ -22,8 +23,13 @@ export const createUser = async (data: {
   name: string;
   role?: "CUSTOMER" | "ADMIN" | "SCANNER";
 }) => {
+  const hashedPassword = await hashPassword(data.password);
+
   return prisma.user.create({
-    data,
+    data: {
+      ...data,
+      password: hashedPassword,
+    },
     select: {
       id: true,
       email: true,
