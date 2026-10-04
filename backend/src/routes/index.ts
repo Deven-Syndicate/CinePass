@@ -5,6 +5,9 @@ import cinemaRoutes from "./cinema.routes";
 import screenRoutes from "./screen.routes";
 import seatRoutes from "./seat.routes";
 import showRoutes from "./show.routes";
+import bookingRoutes from "./booking.routes";
+import userRoutes from "./user.routes";
+import bookingSeatRoutes from "./booking-seat.routes";
 
 const router = Router();
 
@@ -21,5 +24,8 @@ router.use("/cinemas", cinemaRoutes);
 router.use("/screens", screenRoutes);
 router.use("/seats", seatRoutes);
 router.use("/shows", showRoutes);
+router.use("/bookings", bookingRoutes);
+router.use("/users", userRoutes);
+router.use("/bookings", bookingSeatRoutes);
 
 export default router;
