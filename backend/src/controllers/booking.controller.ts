@@ -32,10 +32,11 @@ export const createBookingController = async (
 ) => {
   try {
     const {
-      userId,
       showId,
       seatIds,
     } = req.body;
+
+const userId = req.user?.userId;
 
     if (
       !userId ||
