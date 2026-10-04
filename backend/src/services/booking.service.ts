@@ -60,3 +60,19 @@ export const createBooking = async (data: {
     },
   });
 };
+
+export const expireBookings = async () => {
+  return prisma.booking.updateMany({
+    where: {
+      status: {
+        in: ["PENDING", "PAYMENT_PENDING"],
+      },
+      expiresAt: {
+        lt: new Date(),
+      },
+    },
+    data: {
+      status: "EXPIRED",
+    },
+  });
+};

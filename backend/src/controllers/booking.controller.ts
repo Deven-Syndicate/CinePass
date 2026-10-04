@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import {
   getBookings,
   createBooking,
+  expireBookings,
 } from "../services/booking.service";
 
 export const getBookingsController = async (
@@ -67,6 +68,29 @@ export const createBookingController = async (
     res.status(500).json({
       success: false,
       message: "Failed to create booking",
+    });
+  }
+};
+
+export const expireBookingsController = async (
+  _req: Request,
+  res: Response
+) => {
+  try {
+    const result = await expireBookings();
+
+    res.json({
+      success: true,
+      data: {
+        expiredCount: result.count,
+      },
+    });
+  } catch (error) {
+    console.error("Failed to expire bookings:", error);
+
+    res.status(500).json({
+      success: false,
+      message: "Failed to expire bookings",
     });
   }
 };
