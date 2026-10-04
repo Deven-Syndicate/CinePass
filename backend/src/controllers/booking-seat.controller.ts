@@ -56,21 +56,20 @@ export const addSeatToBookingController = async (
     console.error("Failed to add seat to booking:", error);
 
     if (
-      error instanceof Prisma.PrismaClientKnownRequestError &&
-      error.code === "P2002"
-    ) {
-      return res.status(409).json({
-        success: false,
-        message: "Seat is already added to this booking",
-      });
-    }
+  error instanceof Prisma.PrismaClientKnownRequestError &&
+  error.code === "P2002"
+) {
+  return res.status(409).json({
+    success: false,
+    message: "Seat is already reserved",
+  });
+}
 
     if (error instanceof Error) {
       if (
         error.message === "Booking not found" ||
         error.message === "Seat not found" ||
-        error.message === "Seat does not belong to the show's screen" ||
-        error.message === "Seat is already reserved for this show"
+        error.message === "Seat does not belong to the show's screen"
       ) {
         return res.status(400).json({
           success: false,

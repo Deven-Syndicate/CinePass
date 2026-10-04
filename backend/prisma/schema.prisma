@@ -132,6 +132,7 @@ model Booking {
 model BookingSeat {
   id        Int      @id @default(autoincrement())
   bookingId Int
+  showId    Int
   seatId    Int
   createdAt DateTime @default(now())
 
@@ -139,7 +140,9 @@ model BookingSeat {
   seat    Seat    @relation(fields: [seatId], references: [id])
 
   @@unique([bookingId, seatId])
+  @@unique([showId, seatId])
   @@index([seatId])
+  @@index([showId])
 }
 
 enum PaymentStatus {
