@@ -2,7 +2,10 @@ import crypto from "crypto";
 import QRCode from "qrcode";
 import { prisma } from "./prisma.service";
 
-export const createTicket = async (bookingId: number) => {
+export const createTicket = async (
+    bookingId: number,
+    userId: number
+  ) => {
   const booking = await prisma.booking.findUnique({
     where: { id: bookingId },
     include: {
@@ -12,6 +15,10 @@ export const createTicket = async (bookingId: number) => {
 
   if (!booking) {
     throw new Error("Booking not found");
+  }
+
+  if (booking.userId !== userId) {
+    throw new Error("Access denied");
   }
 
   if (booking.status !== "CONFIRMED") {

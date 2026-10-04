@@ -7,15 +7,19 @@ export const createTicketController = async (
 ) => {
   try {
     const bookingId = Number(req.params.bookingId);
+    const userId = req.user?.userId;
 
-    if (!bookingId) {
+    if (!bookingId || !userId) {
       return res.status(400).json({
         success: false,
         message: "Valid bookingId is required",
       });
     }
 
-    const ticket = await createTicket(bookingId);
+    const ticket = await createTicket(
+      bookingId,
+      Number(userId)
+    );
 
     return res.status(201).json({
       success: true,
@@ -32,6 +36,13 @@ export const createTicketController = async (
         error.message === "Ticket already exists"
       ) {
         return res.status(400).json({
+          success: false,
+          message: error.message,
+        });
+      }
+
+      if (error.message === "Access denied") {
+        return res.status(403).json({
           success: false,
           message: error.message,
         });
