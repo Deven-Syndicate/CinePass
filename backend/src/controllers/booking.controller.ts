@@ -35,7 +35,6 @@ export const createBookingController = async (
       userId,
       showId,
       totalAmount,
-      expiresAt,
     } = req.body;
 
     if (
@@ -53,9 +52,6 @@ export const createBookingController = async (
       userId: Number(userId),
       showId: Number(showId),
       totalAmount: Number(totalAmount),
-      expiresAt: expiresAt
-        ? new Date(expiresAt)
-        : undefined,
     });
 
     res.status(201).json({

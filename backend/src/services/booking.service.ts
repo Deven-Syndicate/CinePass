@@ -41,12 +41,27 @@ export const createBooking = async (data: {
   userId: number;
   showId: number;
   totalAmount: number;
-  expiresAt?: Date;
 }) => {
+  const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
+
   return prisma.booking.create({
-    data,
+    data: {
+      userId: data.userId,
+      showId: data.showId,
+      totalAmount: data.totalAmount,
+      expiresAt,
+    },
     include: {
-      user: true,
+      user: {
+        select: {
+          id: true,
+          email: true,
+          name: true,
+          role: true,
+          createdAt: true,
+          updatedAt: true,
+        },
+      },
       show: {
         include: {
           movie: true,
