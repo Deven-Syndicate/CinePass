@@ -77,17 +77,50 @@ export const createBooking = async (data: {
 };
 
 export const expireBookings = async () => {
-  return prisma.booking.updateMany({
-    where: {
-      status: {
-        in: ["PENDING", "PAYMENT_PENDING"],
+  const now = new Date();
+
+  return prisma.$transaction(async (tx) => {
+    const expiredBookings = await tx.booking.findMany({
+      where: {
+        status: {
+          in: ["PENDING", "PAYMENT_PENDING"],
+        },
+        expiresAt: {
+          lt: now,
+        },
       },
-      expiresAt: {
-        lt: new Date(),
+      select: {
+        id: true,
       },
-    },
-    data: {
-      status: "EXPIRED",
-    },
+    });
+
+    if (expiredBookings.length === 0) {
+      return {
+        count: 0,
+      };
+    }
+
+    const bookingIds = expiredBookings.map((booking) => booking.id);
+
+    await tx.bookingSeat.deleteMany({
+      where: {
+        bookingId: {
+          in: bookingIds,
+        },
+      },
+    });
+
+    const result = await tx.booking.updateMany({
+      where: {
+        id: {
+          in: bookingIds,
+        },
+      },
+      data: {
+        status: "EXPIRED",
+      },
+    });
+
+    return result;
   });
 };
