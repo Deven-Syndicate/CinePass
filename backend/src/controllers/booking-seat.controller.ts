@@ -69,7 +69,8 @@ export const addSeatToBookingController = async (
       if (
         error.message === "Booking not found" ||
         error.message === "Seat not found" ||
-        error.message === "Seat does not belong to the show's screen"
+        error.message === "Seat does not belong to the show's screen" ||
+        error.message === "Seat is already reserved for this show"
       ) {
         return res.status(400).json({
           success: false,

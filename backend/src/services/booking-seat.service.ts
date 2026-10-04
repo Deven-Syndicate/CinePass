@@ -31,6 +31,25 @@ export const addSeatToBooking = async (data: {
     throw new Error("Seat does not belong to the show's screen");
   }
 
+  const existingBookingSeat = await prisma.bookingSeat.findFirst({
+    where: {
+      seatId: data.seatId,
+      booking: {
+        showId: booking.showId,
+        id: {
+          not: data.bookingId,
+        },
+        status: {
+          in: ["PENDING", "PAYMENT_PENDING", "CONFIRMED"],
+        },
+      },
+    },
+  });
+
+  if (existingBookingSeat) {
+    throw new Error("Seat is already reserved for this show");
+  }
+
   return prisma.bookingSeat.create({
     data,
     include: {
