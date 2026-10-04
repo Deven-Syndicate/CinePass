@@ -52,7 +52,7 @@ export const addSeatToBookingController = async (
       success: true,
       data: bookingSeat,
     });
-  } catch (error) {
+    } catch (error) {
     console.error("Failed to add seat to booking:", error);
 
     if (
@@ -63,6 +63,19 @@ export const addSeatToBookingController = async (
         success: false,
         message: "Seat is already added to this booking",
       });
+    }
+
+    if (error instanceof Error) {
+      if (
+        error.message === "Booking not found" ||
+        error.message === "Seat not found" ||
+        error.message === "Seat does not belong to the show's screen"
+      ) {
+        return res.status(400).json({
+          success: false,
+          message: error.message,
+        });
+      }
     }
 
     return res.status(500).json({
