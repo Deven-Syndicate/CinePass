@@ -10,15 +10,19 @@ export const createPaymentController = async (
 ) => {
   try {
     const bookingId = Number(req.params.bookingId);
+    const userId = req.user?.userId;
 
-    if (!bookingId) {
+    if (!bookingId || !userId) {
       return res.status(400).json({
         success: false,
         message: "Valid bookingId is required",
       });
     }
 
-    const payment = await createMockPayment(bookingId);
+    const payment = await createMockPayment(
+      bookingId,
+      Number(userId)
+    );
 
     return res.status(201).json({
       success: true,
@@ -31,7 +35,8 @@ export const createPaymentController = async (
       if (
         error.message === "Booking not found" ||
         error.message === "Booking is not available for payment" ||
-        error.message === "Payment already exists for this booking"
+        error.message === "Payment already exists for this booking" ||
+        error.message === "Access denied"
       ) {
         return res.status(400).json({
           success: false,
@@ -53,15 +58,19 @@ export const verifyPaymentController = async (
 ) => {
   try {
     const paymentId = Number(req.params.paymentId);
+    const userId = req.user?.userId;
 
-    if (!paymentId) {
+    if (!paymentId || !userId) {
       return res.status(400).json({
         success: false,
         message: "Valid paymentId is required",
       });
     }
 
-    const payment = await verifyMockPayment(paymentId);
+    const payment = await verifyMockPayment(
+      paymentId,
+      Number(userId)
+    );
 
     return res.json({
       success: true,
@@ -75,9 +84,12 @@ export const verifyPaymentController = async (
         error.message === "Payment not found" ||
         error.message === "Payment already verified" ||
         error.message ===
-          "Booking is not available for payment verification"
+          "Booking is not available for payment verification" ||
+        error.message === "Access denied"
       ) {
-        return res.status(400).json({
+        return res.status(
+          error.message === "Access denied" ? 403 : 400
+        ).json({
           success: false,
           message: error.message,
         });

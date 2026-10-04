@@ -1,12 +1,19 @@
 import { prisma } from "./prisma.service";
 
-export const createMockPayment = async (bookingId: number) => {
+export const createMockPayment = async (
+    bookingId: number,
+    userId: number
+  ) => {
   const booking = await prisma.booking.findUnique({
     where: { id: bookingId },
   });
 
   if (!booking) {
     throw new Error("Booking not found");
+  }
+
+  if (booking.userId !== userId) {
+    throw new Error("Access denied");
   }
 
   if (booking.status !== "PENDING") {
@@ -33,7 +40,10 @@ export const createMockPayment = async (bookingId: number) => {
   });
 };
 
-export const verifyMockPayment = async (paymentId: number) => {
+export const verifyMockPayment = async (
+    paymentId: number,
+    userId: number
+  ) => {
   return prisma.$transaction(async (tx) => {
     const payment = await tx.payment.findUnique({
       where: { id: paymentId },
@@ -44,6 +54,10 @@ export const verifyMockPayment = async (paymentId: number) => {
 
     if (!payment) {
       throw new Error("Payment not found");
+    }
+
+    if (payment.booking.userId !== userId) {
+      throw new Error("Access denied");
     }
 
     if (payment.status === "SUCCESS") {
