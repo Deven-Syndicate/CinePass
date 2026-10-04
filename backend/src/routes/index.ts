@@ -10,6 +10,7 @@ import userRoutes from "./user.routes";
 import bookingSeatRoutes from "./booking-seat.routes";
 import authRoutes from "./auth.routes";
 import paymentRoutes from "./payment.routes";
+import ticketRoutes from "./ticket.routes";
 
 const router = Router();
 
@@ -31,5 +32,6 @@ router.use("/users", userRoutes);
 router.use("/bookings", bookingSeatRoutes);
 router.use("/auth", authRoutes);
 router.use("/payments", paymentRoutes);
+router.use("/tickets", ticketRoutes);
 
 export default router;
