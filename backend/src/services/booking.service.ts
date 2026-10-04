@@ -40,39 +40,85 @@ export const getBookings = async () => {
 export const createBooking = async (data: {
   userId: number;
   showId: number;
-  totalAmount: number;
+  seatIds: number[];
 }) => {
   const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
 
-  return prisma.booking.create({
-    data: {
-      userId: data.userId,
-      showId: data.showId,
-      totalAmount: data.totalAmount,
-      expiresAt,
-    },
-    include: {
-      user: {
-        select: {
-          id: true,
-          email: true,
-          name: true,
-          role: true,
-          createdAt: true,
-          updatedAt: true,
+  return prisma.$transaction(async (tx) => {
+    const show = await tx.show.findUnique({
+      where: { id: data.showId },
+    });
+
+    if (!show) {
+      throw new Error("Show not found");
+    }
+
+    if (data.seatIds.length === 0) {
+      throw new Error("At least one seat is required");
+    }
+
+    const seats = await tx.seat.findMany({
+      where: {
+        id: {
+          in: data.seatIds,
         },
       },
-      show: {
-        include: {
-          movie: true,
-          screen: {
-            include: {
-              cinema: true,
+    });
+
+    if (seats.length !== data.seatIds.length) {
+      throw new Error("One or more seats not found");
+    }
+
+    const invalidSeat = seats.find(
+      (seat) => seat.screenId !== show.screenId
+    );
+
+    if (invalidSeat) {
+      throw new Error("One or more seats do not belong to the show's screen");
+    }
+
+    const totalAmount = Number(show.price) * data.seatIds.length;
+
+    const booking = await tx.booking.create({
+      data: {
+        userId: data.userId,
+        showId: data.showId,
+        totalAmount,
+        expiresAt,
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+            email: true,
+            name: true,
+            role: true,
+            createdAt: true,
+            updatedAt: true,
+          },
+        },
+        show: {
+          include: {
+            movie: true,
+            screen: {
+              include: {
+                cinema: true,
+              },
             },
           },
         },
       },
-    },
+    });
+
+    await tx.bookingSeat.createMany({
+      data: data.seatIds.map((seatId) => ({
+        bookingId: booking.id,
+        showId: data.showId,
+        seatId,
+      })),
+    });
+
+    return booking;
   });
 };
 

@@ -34,24 +34,25 @@ export const createBookingController = async (
     const {
       userId,
       showId,
-      totalAmount,
+      seatIds,
     } = req.body;
 
     if (
       !userId ||
       !showId ||
-      totalAmount === undefined
+      !Array.isArray(seatIds) ||
+      seatIds.length === 0
     ) {
       return res.status(400).json({
         success: false,
-        message: "userId, showId and totalAmount are required",
+        message: "userId, showId and seatIds are required",
       });
     }
 
     const booking = await createBooking({
       userId: Number(userId),
       showId: Number(showId),
-      totalAmount: Number(totalAmount),
+      seatIds: seatIds.map(Number),
     });
 
     res.status(201).json({
@@ -61,7 +62,22 @@ export const createBookingController = async (
   } catch (error) {
     console.error("Failed to create booking:", error);
 
-    res.status(500).json({
+    if (error instanceof Error) {
+      if (
+        error.message === "Show not found" ||
+        error.message === "At least one seat is required" ||
+        error.message === "One or more seats not found" ||
+        error.message ===
+          "One or more seats do not belong to the show's screen"
+      ) {
+        return res.status(400).json({
+          success: false,
+          message: error.message,
+        });
+      }
+    }
+
+    return res.status(500).json({
       success: false,
       message: "Failed to create booking",
     });
