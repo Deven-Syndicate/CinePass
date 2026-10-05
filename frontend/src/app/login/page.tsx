@@ -26,6 +26,8 @@ export default function LoginPage() {
 
       localStorage.setItem("token", response.data.token);
 
+      window.dispatchEvent(new Event("auth-change"));
+
       const role = response.data.user.role;
 
       if (role === "ADMIN") {
