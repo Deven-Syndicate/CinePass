@@ -11,16 +11,15 @@ type SeatGridProps = {
 };
 
 export default function SeatGrid({
-  
   seats,
   price,
   showId,
 }: SeatGridProps) {
   const router = useRouter();
+
   const [selectedSeats, setSelectedSeats] = useState<number[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
 
   const toggleSeat = (seatId: number) => {
     setSelectedSeats((current) =>
@@ -33,145 +32,239 @@ export default function SeatGrid({
   const total = selectedSeats.length * Number(price);
 
   const handleContinue = async () => {
-  setError("");
-  setSuccess("");
-  setLoading(true);
+    if (selectedSeats.length === 0) return;
 
-  try {
-    const response = await createBooking(showId, selectedSeats);
+    setError("");
+    setLoading(true);
 
-    router.push(`/booking/${response.data.id}`);
+    try {
+      const response = await createBooking(
+        showId,
+        selectedSeats
+      );
 
-    console.log("Booking created:", response.data);
-  } catch (error) {
-    setError(
-      error instanceof Error ? error.message : "Failed to create booking"
-    );
-  } finally {
-    setLoading(false);
-  }
-};
+      router.push(`/booking/${response.data.id}`);
+    } catch (error) {
+      setError(
+        error instanceof Error
+          ? error.message
+          : "Failed to create booking"
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const rows = Object.entries(
+    seats.reduce<Record<string, Seat[]>>((rows, seat) => {
+      if (!rows[seat.row]) {
+        rows[seat.row] = [];
+      }
+
+      rows[seat.row].push(seat);
+
+      return rows;
+    }, {})
+  );
+
+  const getSeatClass = (
+    seat: Seat,
+    selected: boolean
+  ) => {
+    if (!seat.available) {
+      return "cursor-not-allowed border-[#343943] bg-[#252a33] text-gray-600";
+    }
+
+    if (selected) {
+      return "border-[var(--primary)] bg-[var(--primary)] text-white shadow-[0_0_16px_rgba(229,9,20,0.35)] scale-105";
+    }
+
+    if (seat.type === "PREMIUM") {
+      return "border-amber-500/40 bg-amber-500/10 text-amber-300 hover:border-amber-400 hover:bg-amber-500/20";
+    }
+
+    if (seat.type === "RECLINER") {
+      return "border-purple-500/40 bg-purple-500/10 text-purple-300 hover:border-purple-400 hover:bg-purple-500/20";
+    }
+
+    return "border-[#3b4350] bg-[#151a23] text-gray-300 hover:border-gray-300 hover:bg-[#202631]";
+  };
 
   return (
     <div>
-      {/* Screen */}
-      <div className="mx-auto mb-10 max-w-2xl">
-        <div className="h-2 rounded-full bg-black" />
-
-        <p className="mt-3 text-center text-xs font-medium tracking-widest text-gray-400">
-          SCREEN
-        </p>
-      </div>
 
       {/* Legend */}
-      <div className="mb-8 flex justify-center gap-6 text-sm">
-          <div className="flex items-center gap-2">
-            <span className="h-5 w-5 rounded border bg-gray-100" />
-            Available
-          </div>
 
-          <div className="flex items-center gap-2">
-            <span className="h-5 w-5 rounded bg-black" />
-            Selected
-          </div>
-
-          <div className="flex items-center gap-2">
-            <span className="h-5 w-5 rounded border bg-gray-300" />
-            Booked
-          </div>
+      <div className="mb-10 flex flex-wrap justify-center gap-x-6 gap-y-3 text-xs text-gray-400 sm:text-sm">
+        <div className="flex items-center gap-2">
+          <span className="h-4 w-4 rounded border border-[#3b4350] bg-[#151a23]" />
+          Available
         </div>
 
-      {/* Seats */}
-      <div className="space-y-4 overflow-x-auto pb-4">
-        {Object.entries(
-          seats.reduce<Record<string, Seat[]>>((rows, seat) => {
-            if (!rows[seat.row]) {
-              rows[seat.row] = [];
-            }
+        <div className="flex items-center gap-2">
+          <span className="h-4 w-4 rounded bg-[var(--primary)]" />
+          Selected
+        </div>
 
-            rows[seat.row].push(seat);
+        <div className="flex items-center gap-2">
+          <span className="h-4 w-4 rounded bg-[#252a33]" />
+          Booked
+        </div>
 
-            return rows;
-          }, {})
-        ).map(([row, rowSeats]) => (
-          <div
-            key={row}
-            className="flex min-w-max items-center justify-center gap-3"
-          >
-            <span className="w-6 text-center text-sm font-semibold text-gray-500">
-              {row}
-            </span>
+        <div className="flex items-center gap-2">
+          <span className="h-4 w-4 rounded border border-amber-500/40 bg-amber-500/10" />
+          Premium
+        </div>
 
-            {rowSeats.map((seat) => {
-              const selected = selectedSeats.includes(seat.id);
-              const unavailable = !seat.available;
+        <div className="flex items-center gap-2">
+          <span className="h-4 w-4 rounded border border-purple-500/40 bg-purple-500/10" />
+          Recliner
+        </div>
+      </div>
+
+      {/* Seat layout */}
+
+      <div className="overflow-x-auto pb-6">
+        <div className="mx-auto w-fit min-w-max space-y-4">
+
+          {rows.map(([row, rowSeats]) => (
+            <div
+              key={row}
+              className="flex items-center gap-2 sm:gap-3"
+            >
+
+              {/* Row label */}
+
+              <span className="mr-2 flex h-9 w-7 items-center justify-center text-xs font-semibold text-gray-500">
+                {row}
+              </span>
+
+              {/* Seats */}
+
+              <div className="flex gap-2 sm:gap-3">
+                {rowSeats.map((seat) => {
+                  const selected = selectedSeats.includes(
+                    seat.id
+                  );
+
+                  return (
+                    <button
+                      key={seat.id}
+                      type="button"
+                      disabled={!seat.available}
+                      onClick={() => toggleSeat(seat.id)}
+                      title={`${seat.type} • Seat ${seat.row}${seat.number}`}
+                      aria-label={`Seat ${seat.row}${seat.number}`}
+                      aria-pressed={selected}
+                      className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border text-[11px] font-semibold transition duration-200 sm:h-10 sm:w-10 sm:text-xs ${getSeatClass(
+                        seat,
+                        selected
+                      )}`}
+                    >
+                      {seat.number}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
+
+        </div>
+      </div>
+
+      {/* Selected seats */}
+
+      <div className="mt-8 rounded-xl border border-[var(--border)] bg-[#0d1117] p-5">
+
+        <p className="text-xs font-semibold uppercase tracking-wider text-gray-500">
+          Your selection
+        </p>
+
+        {selectedSeats.length === 0 ? (
+          <p className="mt-3 text-sm text-gray-500">
+            No seats selected yet.
+          </p>
+        ) : (
+          <div className="mt-3 flex flex-wrap gap-2">
+            {selectedSeats.map((seatId) => {
+              const seat = seats.find(
+                (item) => item.id === seatId
+              );
+
+              if (!seat) return null;
 
               return (
-                <button
+                <span
                   key={seat.id}
-                  disabled={unavailable}
-                  onClick={() => toggleSeat(seat.id)}
-                  className={
-                    unavailable
-                      ? "flex h-10 w-10 cursor-not-allowed items-center justify-center rounded-md border border-gray-300 bg-gray-300 text-xs font-semibold text-gray-500"
-                      : selected
-                        ? "flex h-10 w-10 items-center justify-center rounded-md bg-black text-xs font-semibold text-white shadow-md transition hover:scale-105"
-                        : "flex h-10 w-10 items-center justify-center rounded-md border border-gray-300 bg-gray-100 text-xs font-semibold text-gray-800 transition hover:border-black hover:bg-gray-200"
-                  }
+                  className="rounded-lg bg-[rgba(229,9,20,0.12)] px-3 py-1.5 text-sm font-semibold text-[var(--primary)]"
                 >
+                  {seat.row}
                   {seat.number}
-                </button>
+                </span>
               );
             })}
           </div>
-        ))}
+        )}
+
       </div>
 
-      {/* Summary */}
-      <div className="mt-10 rounded-xl border bg-gray-50 p-6">
-        <div className="flex items-center justify-between">
+      {/* Booking summary */}
+
+      <div className="mt-5 rounded-2xl border border-[var(--border)] bg-[#10141b] p-5 sm:p-6">
+
+        <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+
           <div>
             <p className="text-sm text-gray-500">
-              Selected seats
+              {selectedSeats.length}{" "}
+              {selectedSeats.length === 1
+                ? "seat"
+                : "seats"}{" "}
+              selected
             </p>
 
-            <p className="mt-1 font-semibold">
-              {selectedSeats.length === 0
-                ? "None"
-                : selectedSeats.length}
+            <p className="mt-1 text-sm text-gray-400">
+              ₹{Number(price).toFixed(2)} per seat
             </p>
           </div>
 
-          <div className="text-right">
-            <p className="text-sm text-gray-500">
+          <div className="sm:text-right">
+            <p className="text-xs uppercase tracking-wider text-gray-500">
               Total
             </p>
 
-            <p className="mt-1 text-2xl font-bold">
+            <p className="mt-1 text-3xl font-bold">
               ₹{total.toFixed(2)}
             </p>
           </div>
+
         </div>
-        
+
+        {/* Error */}
+
         {error && (
-          <p className="mt-4 text-sm text-red-600">
+          <div className="mt-5 rounded-lg border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-400">
             {error}
-          </p>
+          </div>
         )}
 
-        {success && (
-          <p className="mt-4 rounded-lg bg-green-100 px-4 py-3 text-sm font-medium text-green-700">
-            {success}
-          </p>
-        )}
+        {/* Continue */}
 
         <button
-        onClick={handleContinue}
-        disabled={selectedSeats.length === 0 || loading}
-          className="mt-6 w-full rounded-lg bg-black px-4 py-3 font-semibold text-white transition hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-40"
+          type="button"
+          onClick={handleContinue}
+          disabled={
+            selectedSeats.length === 0 || loading
+          }
+          className="cine-button mt-6 w-full py-3.5"
         >
-          {loading ? "Creating booking..." : "Continue"}
+          {loading
+            ? "Creating booking..."
+            : selectedSeats.length === 0
+              ? "Select Seats to Continue"
+              : "Continue to Booking →"}
         </button>
+
       </div>
     </div>
   );

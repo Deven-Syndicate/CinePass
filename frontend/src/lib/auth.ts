@@ -4,6 +4,12 @@ type LoginResponse = {
   success: boolean;
   data: {
     token: string;
+    user: {
+      id: number;
+      email: string;
+      name: string;
+      role: "CUSTOMER" | "ADMIN" | "SCANNER";
+    };
   };
 };
 
