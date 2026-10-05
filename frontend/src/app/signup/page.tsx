@@ -3,13 +3,16 @@
 import { FormEvent, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { login } from "@/lib/auth";
+import { apiFetch } from "@/lib/api";
 
-export default function LoginPage() {
+export default function SignupPage() {
   const router = useRouter();
 
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -19,28 +22,49 @@ export default function LoginPage() {
     event.preventDefault();
 
     setError("");
+
+    if (password !== confirmPassword) {
+      setError("Passwords do not match");
+      return;
+    }
+
+    if (password.length < 8) {
+      setError("Password must be at least 8 characters");
+      return;
+    }
+
     setLoading(true);
 
     try {
-      const response = await login(email, password);
+      const response = await apiFetch<{
+        success: boolean;
+        data: {
+          token: string;
+          user: {
+            id: number;
+            email: string;
+            name: string;
+            role: string;
+          };
+        };
+      }>("/api/v1/auth/register", {
+        method: "POST",
+        body: JSON.stringify({
+          name,
+          email,
+          password,
+        }),
+      });
 
       localStorage.setItem("token", response.data.token);
-
       window.dispatchEvent(new Event("auth-change"));
 
-      const role = response.data.user.role;
-
-      if (role === "ADMIN") {
-        router.push("/admin");
-      } else if (role === "SCANNER") {
-        router.push("/scanner");
-      } else {
-        router.push("/");
-      }
-      
+      router.push("/");
     } catch (error) {
       setError(
-        error instanceof Error ? error.message : "Login failed"
+        error instanceof Error
+          ? error.message
+          : "Registration failed"
       );
     } finally {
       setLoading(false);
@@ -60,25 +84,26 @@ export default function LoginPage() {
             className="inline-flex items-center gap-2 text-2xl font-bold"
           >
             <span className="text-3xl">🎬</span>
+
             <span>
               Cine<span className="text-[var(--primary)]">Pass</span>
             </span>
           </Link>
 
           <p className="mt-3 text-sm text-gray-500">
-            Your movie experience starts here.
+            Start your movie experience today.
           </p>
         </div>
 
-        {/* Login card */}
+        {/* Signup card */}
         <div className="cine-card overflow-hidden">
           <div className="border-b border-[var(--border)] bg-[#0d1117] px-6 py-6 sm:px-8">
             <h1 className="text-2xl font-bold">
-              Welcome back
+              Create your account
             </h1>
 
             <p className="mt-2 text-sm text-gray-500">
-              Sign in to continue booking your favorite movies.
+              Join CinePass and start booking your favorite movies.
             </p>
           </div>
 
@@ -86,6 +111,29 @@ export default function LoginPage() {
             onSubmit={handleSubmit}
             className="space-y-5 p-6 sm:p-8"
           >
+            {/* Name */}
+            <div>
+              <label
+                htmlFor="name"
+                className="mb-2 block text-sm font-medium text-gray-300"
+              >
+                Full name
+              </label>
+
+              <input
+                id="name"
+                type="text"
+                value={name}
+                onChange={(event) =>
+                  setName(event.target.value)
+                }
+                required
+                autoComplete="name"
+                className="cine-input"
+                placeholder="Your name"
+              />
+            </div>
+
             {/* Email */}
             <div>
               <label
@@ -126,7 +174,32 @@ export default function LoginPage() {
                   setPassword(event.target.value)
                 }
                 required
-                autoComplete="current-password"
+                minLength={8}
+                autoComplete="new-password"
+                className="cine-input"
+                placeholder="••••••••"
+              />
+            </div>
+
+            {/* Confirm password */}
+            <div>
+              <label
+                htmlFor="confirmPassword"
+                className="mb-2 block text-sm font-medium text-gray-300"
+              >
+                Confirm password
+              </label>
+
+              <input
+                id="confirmPassword"
+                type="password"
+                value={confirmPassword}
+                onChange={(event) =>
+                  setConfirmPassword(event.target.value)
+                }
+                required
+                minLength={8}
+                autoComplete="new-password"
                 className="cine-input"
                 placeholder="••••••••"
               />
@@ -146,36 +219,36 @@ export default function LoginPage() {
               className="cine-button w-full py-3.5"
             >
               {loading ? (
-                <span className="flex items-center gap-2">
+                <span className="flex items-center justify-center gap-2">
                   <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
-                  Signing in...
+                  Creating account...
                 </span>
               ) : (
-                "Sign In →"
+                "Create Account →"
               )}
             </button>
           </form>
         </div>
 
-        {/* Footer */}
+        {/* Login link */}
         <div className="mt-6 text-center text-sm text-gray-500">
-            Don&apos;t have an account?{" "}
-            <Link
-              href="/signup"
-              className="font-medium text-[var(--primary)] hover:underline"
-            >
-              Create account
-            </Link>
-          </div>
+          Already have an account?{" "}
+          <Link
+            href="/login"
+            className="font-medium text-[var(--primary)] hover:underline"
+          >
+            Sign in
+          </Link>
+        </div>
 
-          <div className="mt-3 text-center">
-            <Link
-              href="/"
-              className="text-sm text-gray-500 hover:text-white"
-            >
-              ← Back to CinePass
-            </Link>
-          </div>
+        <div className="mt-3 text-center">
+          <Link
+            href="/"
+            className="text-sm text-gray-500 hover:text-white"
+          >
+            ← Back to CinePass
+          </Link>
+        </div>
       </div>
     </main>
   );
