@@ -35,6 +35,10 @@ export const createMovieController = async (
       durationMin,
       language,
       genre,
+      description,
+      releaseDate,
+      posterUrl,
+      trailerUrl,
     } = req.body;
 
     if (
@@ -56,7 +60,29 @@ export const createMovieController = async (
       });
     }
 
-    const movie = await createMovie(req.body);
+    let parsedReleaseDate: Date | undefined;
+
+    if (releaseDate) {
+      parsedReleaseDate = new Date(releaseDate);
+
+      if (Number.isNaN(parsedReleaseDate.getTime())) {
+        return res.status(400).json({
+          success: false,
+          message: "releaseDate must be a valid date",
+        });
+      }
+    }
+
+    const movie = await createMovie({
+      title,
+      durationMin: Number(durationMin),
+      language,
+      genre,
+      description,
+      releaseDate: parsedReleaseDate,
+      posterUrl,
+      trailerUrl,
+    });
 
     res.status(201).json({
       success: true,
