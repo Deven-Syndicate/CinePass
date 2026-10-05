@@ -10,12 +10,23 @@ export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
-    setLoggedIn(Boolean(localStorage.getItem("token")));
+    const updateAuthState = () => {
+      setLoggedIn(Boolean(localStorage.getItem("token")));
+    };
+
+    updateAuthState();
+
+    window.addEventListener("auth-change", updateAuthState);
+
+    return () => {
+      window.removeEventListener("auth-change", updateAuthState);
+    };
   }, []);
 
   const logout = () => {
     localStorage.removeItem("token");
     setLoggedIn(false);
+    window.dispatchEvent(new Event("auth-change"));
     router.push("/");
   };
 
@@ -27,11 +38,13 @@ export default function Navbar() {
           className="flex items-center gap-2 text-xl font-bold tracking-tight"
         >
           <span className="text-2xl">🎬</span>
+
           <span>
             Cine<span className="text-[var(--primary)]">Pass</span>
           </span>
         </Link>
 
+        {/* Desktop Navigation */}
         <div className="hidden items-center gap-7 md:flex">
           <Link
             href="/"
@@ -79,6 +92,7 @@ export default function Navbar() {
           )}
         </div>
 
+        {/* Mobile Menu Button */}
         <button
           onClick={() => setMenuOpen(!menuOpen)}
           className="rounded-lg border border-[var(--border)] px-3 py-2 text-gray-300 md:hidden"
@@ -88,6 +102,7 @@ export default function Navbar() {
         </button>
       </nav>
 
+      {/* Mobile Navigation */}
       {menuOpen && (
         <div className="border-t border-[var(--border)] bg-[#0b0e13] px-4 py-4 md:hidden">
           <div className="flex flex-col gap-3">
@@ -109,7 +124,7 @@ export default function Navbar() {
 
             {loggedIn && (
               <Link
-                href="/bookings"
+                href="/booking"
                 onClick={() => setMenuOpen(false)}
                 className="rounded-lg px-3 py-2 text-gray-300 hover:bg-[#151a23] hover:text-white"
               >
