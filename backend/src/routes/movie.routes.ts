@@ -6,6 +6,7 @@ import {
 import { authenticate } from "../middleware/auth.middleware";
 import { authorize } from "../middleware/role.middleware";
 import { UserRole } from "../generated/prisma/client";
+import { upload } from "../middleware/upload.middleware";
 
 const router = Router();
 
@@ -14,6 +15,7 @@ router.post(
   "/",
   authenticate,
   authorize(UserRole.ADMIN),
+  upload.single("poster"),
   createMovieController
 );
 

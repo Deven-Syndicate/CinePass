@@ -3,6 +3,7 @@ import {
   getMovies,
   createMovie,
 } from "../services/movie.service";
+import { uploadImage } from "../services/cloudinary.service";
 
 export const getMoviesController = async (
   _req: Request,
@@ -37,7 +38,6 @@ export const createMovieController = async (
       genre,
       description,
       releaseDate,
-      posterUrl,
       trailerUrl,
     } = req.body;
 
@@ -49,7 +49,8 @@ export const createMovieController = async (
     ) {
       return res.status(400).json({
         success: false,
-        message: "title, durationMin, language and genre are required",
+        message:
+          "title, durationMin, language and genre are required",
       });
     }
 
@@ -71,6 +72,12 @@ export const createMovieController = async (
           message: "releaseDate must be a valid date",
         });
       }
+    }
+
+    let posterUrl: string | undefined;
+
+    if (req.file) {
+      posterUrl = await uploadImage(req.file.buffer);
     }
 
     const movie = await createMovie({

@@ -22,7 +22,7 @@ export default function AdminMoviesPage() {
     genre: "",
     description: "",
     releaseDate: "",
-    posterUrl: "",
+    poster: null as File | null,
     trailerUrl: "",
   });
 
@@ -62,7 +62,7 @@ export default function AdminMoviesPage() {
         genre: form.genre,
         description: form.description || undefined,
         releaseDate: form.releaseDate || undefined,
-        posterUrl: form.posterUrl || undefined,
+        poster: form.poster || undefined,
         trailerUrl: form.trailerUrl || undefined,
       });
 
@@ -73,7 +73,7 @@ export default function AdminMoviesPage() {
         genre: "",
         description: "",
         releaseDate: "",
-        posterUrl: "",
+        poster: null,
         trailerUrl: "",
       });
 
@@ -222,17 +222,23 @@ export default function AdminMoviesPage() {
                 }
               />
 
-              <input
-                className="cine-input"
-                placeholder="Poster URL"
-                value={form.posterUrl}
-                onChange={(e) =>
-                  setForm({
-                    ...form,
-                    posterUrl: e.target.value,
-                  })
-                }
-              />
+              <div>
+                <label className="mb-2 block text-sm font-medium">
+                  Poster
+                </label>
+
+                <input
+                  className="cine-input"
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) =>
+                    setForm({
+                      ...form,
+                      poster: e.target.files?.[0] || null,
+                    })
+                  }
+                />
+              </div>
 
               <input
                 className="cine-input"
