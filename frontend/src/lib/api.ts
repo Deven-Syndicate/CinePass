@@ -8,6 +8,7 @@ export async function apiFetch<T>(
 
   const response = await fetch(`${API_URL}${endpoint}`, {
     ...options,
+    cache: "no-store",
     headers: {
       ...(isFormData ? {} : { "Content-Type": "application/json" }),
       ...options.headers,
