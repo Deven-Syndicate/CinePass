@@ -1,0 +1,83 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="900" viewBox="0 0 1400 900" fill="none">
+  <defs>
+    <radialGradient id="roomGlow" cx="78%" cy="43%" r="70%">
+      <stop offset="0" stop-color="#8b0715" stop-opacity=".42"/>
+      <stop offset=".48" stop-color="#430810" stop-opacity=".27"/>
+      <stop offset="1" stop-color="#08090d" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="edgeFade" cx="72%" cy="49%" r="72%">
+      <stop stop-color="white"/>
+      <stop offset=".72" stop-color="white" stop-opacity=".9"/>
+      <stop offset="1" stop-color="white" stop-opacity="0"/>
+    </radialGradient>
+    <mask id="fadeEdges">
+      <rect width="1400" height="900" fill="url(#edgeFade)"/>
+    </mask>
+    <linearGradient id="screen" x1="690" y1="170" x2="1120" y2="430" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#f8d6aa"/>
+      <stop offset=".35" stop-color="#d98650"/>
+      <stop offset=".72" stop-color="#8a2930"/>
+      <stop offset="1" stop-color="#32101a"/>
+    </linearGradient>
+    <linearGradient id="screenShade" x1="860" y1="180" x2="920" y2="436" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#fff4dc" stop-opacity=".48"/>
+      <stop offset="1" stop-color="#16090e" stop-opacity=".42"/>
+    </linearGradient>
+    <linearGradient id="beam" x1="887" y1="378" x2="790" y2="770" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#ffc17d" stop-opacity=".22"/>
+      <stop offset="1" stop-color="#e50920" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="seat" x1="0" y1="0" x2="0" y2="1">
+      <stop stop-color="#a20d20"/>
+      <stop offset=".58" stop-color="#570b17"/>
+      <stop offset="1" stop-color="#210b12"/>
+    </linearGradient>
+    <linearGradient id="seatLight" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#ed3542" stop-opacity=".65"/>
+      <stop offset="1" stop-color="#ed3542" stop-opacity="0"/>
+    </linearGradient>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="34"/>
+    </filter>
+    <filter id="soft" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="8"/>
+    </filter>
+    <g id="chair">
+      <path d="M8 3C8-3 13-8 20-8H68C75-8 80-3 80 3V39C80 46 75 51 68 51H20C13 51 8 46 8 39V3Z" fill="url(#seat)" stroke="#d52a3b" stroke-opacity=".38" stroke-width="2"/>
+      <path d="M13 5C13 0 17-4 22-4H66C71-4 75 0 75 5V31C75 36 71 40 66 40H22C17 40 13 36 13 31V5Z" fill="url(#seatLight)" opacity=".52"/>
+      <path d="M4 37H14V53H4C1 53-1 51-1 48V43C-1 40 1 37 4 37ZM74 37H84C87 37 89 40 89 43V48C89 51 87 53 84 53H74V37Z" fill="#360a13" stroke="#a7192a" stroke-opacity=".5" stroke-width="2"/>
+      <path d="M19 48V57M70 48V57M13 57H76" stroke="#220910" stroke-width="5" stroke-linecap="round"/>
+    </g>
+  </defs>
+
+  <g mask="url(#fadeEdges)">
+    <rect width="1400" height="900" fill="url(#roomGlow)"/>
+    <ellipse cx="930" cy="390" rx="360" ry="260" fill="#a0081b" opacity=".2" filter="url(#glow)"/>
+
+    <!-- soft projector beam, kept subtle to merge into the page -->
+    <path d="M735 408L1126 405L1334 826L541 826L735 408Z" fill="url(#beam)"/>
+    <path d="M716 405L1140 405" stroke="#f4bd85" stroke-opacity=".2" stroke-width="2" filter="url(#soft)"/>
+
+    <!-- luminous screen with an abstract, non-branded film landscape -->
+    <rect x="650" y="135" width="590" height="346" rx="20" fill="#e50920" opacity=".18" filter="url(#glow)"/>
+    <rect x="681" y="151" width="552" height="324" rx="13" fill="#130c11" stroke="#e9a46b" stroke-opacity=".4" stroke-width="2"/>
+    <rect x="695" y="165" width="524" height="296" rx="6" fill="url(#screen)"/>
+    <path d="M695 370C766 336 811 350 872 311C927 276 971 296 1017 250C1064 203 1121 235 1219 191V461H695V370Z" fill="#35101a" opacity=".63"/>
+    <path d="M695 401C773 371 835 386 899 350C968 312 1015 347 1067 312C1125 273 1170 290 1219 262V461H695V401Z" fill="#170d14" opacity=".74"/>
+    <path d="M695 165H1219V461H695Z" fill="url(#screenShade)"/>
+    <path d="M706 176H1208V450H706Z" stroke="#fff1d4" stroke-opacity=".23" stroke-width="2"/>
+    <ellipse cx="957" cy="463" rx="255" ry="35" fill="#f26846" opacity=".18" filter="url(#soft)"/>
+
+    <!-- rows of plush red seats, fading toward the edges -->
+    <g opacity=".62" transform="translate(496 590) scale(.72)">
+      <use href="#chair" x="0"/><use href="#chair" x="96"/><use href="#chair" x="192"/><use href="#chair" x="288"/><use href="#chair" x="384"/><use href="#chair" x="480"/><use href="#chair" x="576"/><use href="#chair" x="672"/><use href="#chair" x="768"/><use href="#chair" x="864"/>
+    </g>
+    <g opacity=".78" transform="translate(427 674) scale(.88)">
+      <use href="#chair" x="0"/><use href="#chair" x="96"/><use href="#chair" x="192"/><use href="#chair" x="288"/><use href="#chair" x="384"/><use href="#chair" x="480"/><use href="#chair" x="576"/><use href="#chair" x="672"/><use href="#chair" x="768"/><use href="#chair" x="864"/>
+    </g>
+    <g opacity=".9" transform="translate(336 778) scale(1.04)">
+      <use href="#chair" x="0"/><use href="#chair" x="96"/><use href="#chair" x="192"/><use href="#chair" x="288"/><use href="#chair" x="384"/><use href="#chair" x="480"/><use href="#chair" x="576"/><use href="#chair" x="672"/><use href="#chair" x="768"/><use href="#chair" x="864"/>
+    </g>
+    <rect y="820" width="1400" height="80" fill="#08090d" opacity=".58"/>
+  </g>
+</svg>

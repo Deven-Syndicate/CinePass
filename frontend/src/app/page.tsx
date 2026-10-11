@@ -9,12 +9,11 @@ export default async function Home() {
   return (
     <main className="min-h-screen bg-[var(--background)]">
       {/* Hero */}
-
       <section className="relative overflow-hidden border-b border-[var(--border)]">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_40%,rgba(229,9,20,0.18),transparent_45%)]" />
 
-        <div className="relative mx-auto flex min-h-[520px] max-w-7xl items-center px-6 py-20 lg:px-8">
-          <div className="max-w-3xl">
+        <div className="relative mx-auto grid min-h-[520px] max-w-7xl grid-cols-1 items-center gap-8 px-6 py-20 lg:grid-cols-[1.05fr_1.15fr] lg:gap-12 lg:px-8">
+          <div className="max-w-2xl">
             <p className="mb-5 text-sm font-semibold uppercase tracking-[0.25em] text-[var(--primary)]">
               Welcome to CinePass
             </p>
@@ -38,20 +37,23 @@ export default async function Home() {
               <a href="#movies" className="cine-button px-6 py-3">
                 Explore Movies
               </a>
-
-              {/* <Link
-                href="/login"
-                className="cine-button-secondary px-6 py-3"
-              >
-                Sign In
-              </Link> */}
             </div>
+          </div>
+
+          <div className="relative mx-auto hidden aspect-[14/9] w-full max-w-3xl lg:block">
+            <Image
+              src="/cinepass-theatre-hero.svg"
+              alt="A glowing cinema screen above rows of red theatre seats"
+              fill
+              priority
+              sizes="(min-width: 1024px) 50vw, 100vw"
+              className="object-contain"
+            />
           </div>
         </div>
       </section>
 
       {/* Movies */}
-
       <section
         id="movies"
         className="mx-auto max-w-7xl px-6 py-16 lg:px-8"
@@ -140,7 +142,6 @@ export default async function Home() {
       </section>
 
       {/* Feature strip */}
-
       <section className="border-t border-[var(--border)] bg-[#0b0e13]">
         <div className="mx-auto grid max-w-7xl gap-8 px-6 py-14 sm:grid-cols-3 lg:px-8">
           <div>
