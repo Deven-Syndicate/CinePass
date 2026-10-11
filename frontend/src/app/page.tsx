@@ -1,5 +1,5 @@
 import Image from "next/image";
-import Link from "next/link";
+// import Link from "next/link";
 import { getMovies } from "@/lib/movies";
 
 export default async function Home() {
@@ -39,12 +39,12 @@ export default async function Home() {
                 Explore Movies
               </a>
 
-              <Link
+              {/* <Link
                 href="/login"
                 className="cine-button-secondary px-6 py-3"
               >
                 Sign In
-              </Link>
+              </Link> */}
             </div>
           </div>
         </div>
